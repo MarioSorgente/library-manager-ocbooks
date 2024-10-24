@@ -1,0 +1,27 @@
+<div class="book-card" draggable="true" ondragstart="handleDrag(event)" data-book-id="{{ user_book.book.id }}">
+    <div class="row g-0">
+        <div class="col-4">
+            <img src="{{ user_book.book.cover_url }}" class="card-img" alt="{{ user_book.book.title }}">
+        </div>
+        <div class="col-8">
+            <div class="card-body">
+                <h5 class="card-title clickable" onclick="handleShowBookDetails({{ user_book.book.id }}, '{{ user_book.book.title | replace("'", "\\'") }}', '{{ user_book.book.authors | replace("'", "\\'") }}', 
+                                           '{{ user_book.book.description | replace("'", "\\'") }}', '{{ user_book.book.cover_url }}', {{ user_book.rating or 'null' }})">
+                    {{ user_book.book.title }}
+                </h5>
+                <p class="card-text">{{ user_book.book.authors }}</p>
+                <div class="rating {% if user_book.status != 'read' %}d-none{% endif %}" 
+                     data-book-id="{{ user_book.book.id }}" 
+                     data-rating="{{ user_book.rating or 0 }}">
+                    {% for i in range(5) %}
+                        <span class="star {% if user_book.rating and i < user_book.rating %}active{% endif %}"
+                              data-rating="{{ i + 1 }}">★</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" 
+            onclick="handleConfirmDeleteBook({{ user_book.book.id }})" 
+            title="Remove from library"></button>
+</div>

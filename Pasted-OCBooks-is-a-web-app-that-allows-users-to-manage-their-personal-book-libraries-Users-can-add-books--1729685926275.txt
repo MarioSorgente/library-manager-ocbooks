@@ -1,0 +1,58 @@
+OCBooks is a web app that allows users to manage their personal book libraries. Users can add books to different categories, rate them, and receive personalized recommendations based on their ratings.
+
+Features:
+
+Book Data Source:
+
+Use an accessible book API of your choice (e.g., Google Books API, Open Library API, etc.).
+The user can provide the API key if required.
+User Library Management:
+
+Users can add books to their personal library under the following categories:
+Want to Read
+Reading
+Read
+For each book, users can:
+View the book cover and a brief description.
+Rate the book from 1 to 5 stars.
+Recommendations:
+
+Implement a machine learning algorithm that analyzes the books the user has rated.
+Provide personalized book recommendations based on user ratings and reading history, displayed in the Recommended category.
+Recommendations should include the book cover and description for each suggested book.
+User Interface:
+
+Design a user-friendly interface where users can:
+Search for books.
+View book details, including the book cover and description.
+Manage their library categories.
+Include visual representations of ratings (e.g., star icons).
+Display the book cover and description prominently for each book in the user's library and search results.
+User Authentication:
+
+Implement user registration and login functionality to save and retrieve individual user libraries.
+Responsive Design:
+
+Ensure the application is responsive and works seamlessly on desktops, tablets, and mobile devices.
+Additional Features:
+
+Allow users to edit or remove books from their categories.
+(Optional) Display average ratings for books based on all user ratings if implementing a community feature.
+API Integration Details:
+
+Book Data Source:
+Use endpoints to search for books by title, author, or ISBN.
+Fetch book details including:
+Title
+Authors
+Cover Images
+Descriptions
+Machine Learning Recommendations:
+
+Analyze user-rated books to find similar books using attributes like genres, authors, and keywords.
+Use a recommendation algorithm (e.g., content-based filtering or collaborative filtering) to suggest books.
+Ensure that recommended books display the book cover and description.
+Technology Stack:
+
+You are free to choose the technology stack that works best for you.
+Ensure that the chosen technologies support all the required features and provide a smooth user experience.

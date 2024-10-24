@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>My Library</h2>
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                Add Books
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="kanban-board">
+    <div class="kanban-column">
+        <div class="column-header">
+            <h3>Want to Read</h3>
+        </div>
+        <div class="book-list" id="want_to_read" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            {% for user_book in want_to_read %}
+                {% include "books/book_card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="kanban-column">
+        <div class="column-header">
+            <h3>Currently Reading</h3>
+        </div>
+        <div class="book-list" id="reading" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            {% for user_book in reading %}
+                {% include "books/book_card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="kanban-column">
+        <div class="column-header">
+            <h3>Read</h3>
+        </div>
+        <div class="book-list" id="read" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            {% for user_book in read %}
+                {% include "books/book_card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Reading Progress Graph -->
+<div class="row mt-4 mb-4">
+    <div class="col">
+        <div class="progress-card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Reading Progress</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="readingProgress" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col">
+        <h3>Recommended for You</h3>
+        <div class="recommendation-list">
+            {% for book in recommendations %}
+                <div class="recommendation-card">
+                    <img src="{{ book.cover_url }}" class="recommendation-image" alt="{{ book.title }}"
+                         onclick="handleShowBookDetails({{ book.id }}, '{{ book.title | replace("'", "\\'") }}', '{{ book.authors | replace("'", "\\'") }}', '{{ book.description | replace("'", "\\'") }}', '{{ book.cover_url }}')">
+                    <div class="recommendation-info">
+                        <h5>{{ book.title }}</h5>
+                        <p>{{ book.authors }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Book Details Modal -->
+<div class="modal fade" id="bookDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookDetailsTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img id="bookDetailsCover" class="img-fluid rounded" alt="Book cover">
+                    </div>
+                    <div class="col-md-8">
+                        <h6 id="bookDetailsAuthor" class="mb-3"></h6>
+                        <p id="bookDetailsDescription" class="mb-3"></p>
+                        <div id="bookDetailsRating" class="rating rating-large mb-3">
+                            <div class="stars">
+                                {% for i in range(5) %}
+                                    <span class="star" data-rating="{{ i + 1 }}">★</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "books/search.html" %}
+
+<!-- Loading indicator -->
+<div id="loading-indicator" style="display: none;">
+    <div class="spinner-border text-light me-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <span>Processing...</span>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/books.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ratings.js') }}"></script>
+<script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+{% endblock %}

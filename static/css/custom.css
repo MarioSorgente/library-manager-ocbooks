@@ -1,0 +1,242 @@
+:root {
+    --burgundy: rgb(128, 0, 32);
+    --burgundy-dark: rgb(100, 0, 25);
+    --burgundy-light: rgb(156, 0, 39);
+    --card-bg: var(--bs-dark-bg-subtle);
+    --card-border: var(--bs-border-color-translucent);
+    --hover-bg: var(--bs-tertiary-bg);
+    --drag-indicator: rgba(128, 0, 32, 0.1);
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: var(--burgundy) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;
+    transition: opacity 0.3s ease;
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+
+/* Kanban board styling */
+.kanban-board {
+    display: flex;
+    gap: 1.5rem;
+    height: calc(100vh - 350px);
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+}
+
+.kanban-column {
+    flex: 1;
+    min-width: calc((100% - 3rem) / 3);
+    background: var(--card-bg);
+    border-radius: 0.75rem;
+    border: 1px solid var(--card-border);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.book-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    min-height: 200px;
+    transition: all 0.3s ease;
+}
+
+.book-list.drag-over {
+    border: 2px dashed var(--burgundy);
+    background-color: var(--drag-indicator);
+    border-radius: 0.75rem;
+    transform: scale(1.02);
+}
+
+.column-header {
+    padding: 1.25rem;
+    background: var(--burgundy);
+    color: white;
+    border-radius: 0.75rem 0.75rem 0 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Book card styling */
+.book-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    cursor: grab;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(128, 0, 32, 0.2);
+}
+
+.book-card.dragging {
+    opacity: 0.8;
+    transform: scale(1.05) rotate(1deg);
+    box-shadow: 0 8px 16px rgba(128, 0, 32, 0.3);
+    cursor: grabbing;
+    z-index: 1000;
+}
+
+.book-card .card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 0.75rem 0.75rem 0 0;
+    transition: transform 0.3s ease;
+}
+
+.book-card .card-body {
+    padding: 1rem;
+    background: linear-gradient(
+        to bottom,
+        var(--card-bg),
+        var(--bs-dark-bg-subtle)
+    );
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--bs-body-color);
+}
+
+.card-title.clickable {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.card-title.clickable:hover {
+    color: var(--burgundy-light);
+}
+
+/* Rating styling */
+.rating {
+    display: inline-flex;
+    gap: 2px;
+    transition: opacity 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.star {
+    cursor: pointer;
+    color: var(--bs-secondary-color);
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
+}
+
+.star:hover {
+    transform: scale(1.2);
+    color: var(--burgundy-light);
+}
+
+.star.active {
+    color: var(--burgundy-light);
+}
+
+/* Modal styling */
+.modal-content {
+    background: var(--bs-dark-bg-subtle);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-header {
+    background: var(--burgundy);
+    color: white;
+    border-radius: 0.75rem 0.75rem 0 0;
+    padding: 1.25rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--card-border);
+    padding: 1.25rem;
+}
+
+/* Progress Graph */
+.progress-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin-top: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-card .card-header {
+    background: var(--burgundy);
+    color: white;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+}
+
+.progress-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kanban-board {
+        flex-direction: column;
+        height: auto;
+        gap: 1rem;
+    }
+    
+    .kanban-column {
+        min-height: 300px;
+    }
+
+    .book-card .card-img {
+        height: 120px;
+    }
+}
+
+/* Loading Indicator */
+#loading-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
