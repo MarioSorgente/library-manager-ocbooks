@@ -13,6 +13,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+def get_database_url():
+    """Return a SQLAlchemy-compatible database URL for every environment."""
+    database_url = (
+        os.environ.get("DATABASE_URL")
+        or os.environ.get("POSTGRES_URL")
+        or os.environ.get("POSTGRES_PRISMA_URL")
+    )
+
+    # Some providers still expose the deprecated postgres:// scheme.
+    if database_url and database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    # Vercel's filesystem is read-only except for /tmp. This fallback makes
+    # preview deployments boot, while production should use a hosted database.
+    return database_url or "sqlite:////tmp/ocbooks.db"
+
 class Base(DeclarativeBase):
     pass
 
@@ -24,13 +41,16 @@ def create_app():
     app.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
     
     # Database configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-        "pool_size": 10,
-        "max_overflow": 20,
-    }
+    app.config["SQLALCHEMY_DATABASE_URI"] = get_database_url()
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
+
+    if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgresql"):
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"].update({
+            "pool_recycle": 300,
+            "pool_size": 5,
+            "max_overflow": 5,
+        })
     
     # Initialize extensions
     db.init_app(app)
@@ -49,17 +69,13 @@ def create_app():
         app.register_blueprint(books.bp)
         
         try:
-            # Drop all tables
-            db.drop_all()
-            logger.info("Existing tables dropped successfully")
-            
-            # Recreate tables
+            # create_all is idempotent. Never destroy user data during a cold start.
             db.create_all()
             db.session.commit()
-            logger.info("Database tables reset successfully")
+            logger.info("Database tables initialized successfully")
             
         except Exception as e:
-            logger.error(f"Database reset error: {str(e)}")
+            logger.error(f"Database initialization error: {str(e)}")
             
     @login_manager.user_loader
     def load_user(user_id):
