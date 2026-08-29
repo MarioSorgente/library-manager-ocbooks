@@ -1,9 +1,13 @@
 from models import UserBook, Book
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import re
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _tokens(book):
+    text = f"{book.title or ''} {book.authors or ''} {book.description or ''}"
+    return set(re.findall(r"[a-z0-9]+", text.lower()))
 
 def get_recommendations(user_id, n_recommendations=5):
     try:
@@ -21,45 +25,24 @@ def get_recommendations(user_id, n_recommendations=5):
         if not all_books:
             return []
         
-        # Create text representation for each book
-        book_texts = []
-        book_ids = []
-        for book in all_books:
-            if book.title and book.authors:  # Only include books with valid data
-                text = f"{book.title} {book.authors} {book.description or ''}"
-                book_texts.append(text)
-                book_ids.append(book.id)
-        
-        if not book_texts:  # If no valid books found
+        candidates = [(book, _tokens(book)) for book in all_books if book.title]
+        if not candidates:
             return []
-            
-        # Convert to TF-IDF features
-        vectorizer = TfidfVectorizer(stop_words='english')
-        tfidf_matrix = vectorizer.fit_transform(book_texts)
-        
-        # Calculate similarity between books
-        similarities = cosine_similarity(tfidf_matrix)
-        
-        # Get recommendations based on highest rated books
-        recommended_books = set()
-        for user_book in sorted(rated_books, key=lambda x: x.rating or 0, reverse=True):
-            try:
-                book_idx = book_ids.index(user_book.book_id)
-                similar_indices = similarities[book_idx].argsort()[::-1][1:6]
-                
-                for idx in similar_indices:
-                    book_id = book_ids[idx]
-                    if book_id not in user_book_ids:
-                        recommended_books.add(Book.query.get(book_id))
-                        if len(recommended_books) >= n_recommendations:
-                            break
-            except ValueError:
-                continue
-            
-            if len(recommended_books) >= n_recommendations:
-                break
-        
-        return list(recommended_books)
+
+        # Rank candidates by token overlap with books the user rated highly.
+        preferences = [
+            (_tokens(user_book.book), user_book.rating or 0)
+            for user_book in rated_books
+        ]
+
+        def score(candidate_tokens):
+            return sum(
+                rating * len(candidate_tokens & liked_tokens)
+                for liked_tokens, rating in preferences
+            )
+
+        ranked = sorted(candidates, key=lambda item: score(item[1]), reverse=True)
+        return [book for book, _ in ranked[:n_recommendations]]
     except Exception as e:
         logger.error(f"Error in recommendations: {str(e)}")
         return []

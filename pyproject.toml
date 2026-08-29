@@ -9,6 +9,5 @@ dependencies = [
     "flask-sqlalchemy>=3.1.1",
     "psycopg2-binary>=2.9.10",
     "flask-login>=0.6.3",
-    "scikit-learn>=1.5.2",
     "requests>=2.32.3",
 ]
